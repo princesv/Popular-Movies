@@ -7,23 +7,27 @@
     tools:context=".MainActivity"
     android:background="@android:color/darker_gray"
     android:orientation="vertical">
-
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/errorMessage"
+        android:visibility="invisible"
+        android:text="Check internet connection!"
+        android:textStyle="italic"
+        />
 
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="400dp">
+        android:layout_height="match_parent"
+        android:id="@+id/mainData">
+
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/movie_grid_recycler_view"/>
+            android:id="@+id/movie_grid_recycler_view" />
     </ScrollView>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv"
-        android:textColor="@color/colorPrimaryDark"/>
+
 
 
 

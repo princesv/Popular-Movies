@@ -1,25 +1,6 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string-array name="petname">
-        <item>cat</item>
-        <item>dog</item>
-        <item>rat</item>
-        <item>cat</item>
-        <item>dog</item>
-        <item>rat</item>
-        <item>cat</item>
-        <item>dog</item>
-        <item>rat</item>
-    </string-array>
-    <string-array name="desc">
-        <item>cats are addorable</item>
-        <item>Dogs are loyal</item>
-        <item>mouses are mischivious</item>
-        <item>cats are addorable</item>
-        <item>Dogs are loyal</item>
-        <item>mouses are mischivious</item>
-        <item>cats are addorable</item>
-        <item>Dogs are loyal</item>
-        <item>mouses are mischivious</item>
-    </string-array>
+   <string name="popular">sort by popularity</string>
+    <string name="rating">sort top rating</string>
+
 </resources>

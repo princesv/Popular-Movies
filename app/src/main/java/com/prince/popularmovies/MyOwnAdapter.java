@@ -12,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 public class MyOwnAdapter extends RecyclerView.Adapter<MyOwnAdapter.MyOwnViewHandler> {
     Context context;
-    String[] animalName;
-    String[] animalDescription;
-    String[] animalImage;
+    List<String> movieName;
+    List<String> movieImage;
+    List<Double> movieRating;
     final private ListItemClickListener mClickListener;
     @NonNull
     @Override
@@ -41,16 +43,16 @@ public class MyOwnAdapter extends RecyclerView.Adapter<MyOwnAdapter.MyOwnViewHan
 
     @Override
     public void onBindViewHolder(@NonNull MyOwnViewHandler holder, int position) {
-        holder.tvName.setText(animalName[position]);
-        holder.tvDescription.setText(animalDescription[position]);
+        holder.tvName.setText(movieName.get(position));
+        holder.tvDescription.setText(""+movieRating.get(position));
       //  holder.animalImage.setImageResource(animalImage[position]);
-        Picasso.get().load(animalImage[position]).into(holder.animalImage);
+        Picasso.get().load("http://image.tmdb.org/t/p/w185//"+movieImage.get(position)).into(holder.animalImage);
 
     }
 
     @Override
     public int getItemCount() {
-        return animalName.length;
+        return movieName.size();
     }
 
     public class MyOwnViewHandler extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -75,9 +77,9 @@ public class MyOwnAdapter extends RecyclerView.Adapter<MyOwnAdapter.MyOwnViewHan
     }
     MyOwnAdapter(Context context,Parameters parameters,ListItemClickListener listener ){
         this.context=context;
-        this.animalName = parameters.getAnimalName();
-        this.animalDescription = parameters.getAnimalDescriptions();
-        this.animalImage = parameters.getAnimalImage();
+        this.movieName = parameters.getMovieName();
+        this.movieRating = parameters.getMovieRating();
+        this.movieImage = parameters.getMovieImage();
         mClickListener = listener;
     }
 }

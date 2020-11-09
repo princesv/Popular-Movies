@@ -1,31 +1,34 @@
 package com.prince.popularmovies;
 
+import java.util.List;
+
 public class Parameters {
-    String animalName[];
-    String animalDescriptions[];
-    String animalImage[];
+    List<String> movieName;
+    List<Double> movieRating;
+    List<String> movieImage;
 
-    public String[] getAnimalName() {
-        return animalName;
+    public List<String> getMovieName() {
+        return movieName;
     }
 
-    public void setAnimalName(String[] animalName) {
-        this.animalName = animalName;
+    public void setMovieName(List<String> movieName) {
+        this.movieName = movieName;
     }
 
-    public String[] getAnimalDescriptions() {
-        return animalDescriptions;
+
+    public List<Double> getMovieRating() {
+        return movieRating;
     }
 
-    public void setAnimalDescriptions(String[] animalDescriptions) {
-        this.animalDescriptions = animalDescriptions;
+    public void setMovieRating(List<Double> movieRating) {
+        this.movieRating = movieRating;
     }
 
-    public String[] getAnimalImage() {
-        return animalImage;
+    public List<String> getMovieImage() {
+        return movieImage;
     }
 
-    public void setAnimalImage(String[] animalImage) {
-        this.animalImage = animalImage;
+    public void setMovieImage(List<String> movieImage) {
+        this.movieImage = movieImage;
     }
 }

@@ -1,5 +1,6 @@
 package com.prince.popularmovies;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,8 +9,12 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,58 +30,51 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MainActivity extends AppCompatActivity implements MyOwnAdapter.ListItemClickListener {
     RecyclerView movieGridRecyclerView;
     MyOwnAdapter myOwnAdapter;
-    String animalName[];
-    String animalDescription[];
-    String animalImage[] = {"https://homepages.cae.wisc.edu/~ece533/images/airplane.png","https://homepages.cae.wisc.edu/~ece533/images/arctichare.png","https://homepages.cae.wisc.edu/~ece533/images/baboon.png","https://homepages.cae.wisc.edu/~ece533/images/airplane.png","https://homepages.cae.wisc.edu/~ece533/images/arctichare.png","https://homepages.cae.wisc.edu/~ece533/images/baboon.png","https://homepages.cae.wisc.edu/~ece533/images/airplane.png","https://homepages.cae.wisc.edu/~ece533/images/arctichare.png","https://homepages.cae.wisc.edu/~ece533/images/baboon.png"};
+    TextView tvErrorMessage;
     Parameters paramitersToInflateMoviesList;
-    TextView textView;
-    String gSearchResult;
-    private final String stringUrlToFetchData = "http://api.themoviedb.org/3/movie/popular?api_key=41ec4d909d71953ad8ffa75eb3157315";
+    public String gSearchResult;
+
+    private final String stringBaseAddressTopRated = "http://api.themoviedb.org/3/movie/top_rated?api_key=";
+    private final String stringBaseAddressPopular = "http://api.themoviedb.org/3/movie/popular?api_key=";
+    private final String api = "41ec4d909d71953ad8ffa75eb3157315";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-      //  animalName[0] = "Cat";
-       // animalName[1] = "Dog";
-       // animalName[2] = "mouse";
 
-       // animalDescription[0] = "Cats are addorable";
-       // animalDescription[1] = "Dog are loyal";
-       // animalDescription[2] = "mouse are mischevious";
-
-        //animalImage[0] = R.drawable.dog;
-       // animalImage[1] = R.drawable.cat;
-       // animalImage[2] = R.drawable.mouse;
-        textView = findViewById(R.id.tv);
         paramitersToInflateMoviesList = new Parameters();
-        animalName = getResources().getStringArray(R.array.petname);
-        animalDescription = getResources().getStringArray(R.array.desc);
-        paramitersToInflateMoviesList.setAnimalDescriptions(animalDescription);
-        paramitersToInflateMoviesList.setAnimalImage(animalImage);
-        paramitersToInflateMoviesList.setAnimalName(animalName);
 
         movieGridRecyclerView = findViewById(R.id.movie_grid_recycler_view);
+        tvErrorMessage = findViewById(R.id.errorMessage);
+
+
+        new FetchDataFronInterner().execute(stringBaseAddressPopular+api);
+
+    }
+
+    void inflateMainActivity(Parameters paramitersToInflateMoviesList){
         myOwnAdapter = new MyOwnAdapter(this,paramitersToInflateMoviesList,this);
         GridLayoutManager layoutManager = new GridLayoutManager(this,2);
 
         movieGridRecyclerView.setLayoutManager(layoutManager);
         movieGridRecyclerView.setHasFixedSize(true);
         movieGridRecyclerView.setAdapter(myOwnAdapter);
-        new FetchDataFronInterner().execute(stringUrlToFetchData);
-
     }
 
     @Override
     public void onListItemClick(int listItemIndex) {
         Intent intentToStartDetailActivity = new Intent(MainActivity.this,DetailActivity.class);
-        intentToStartDetailActivity.putExtra("DETAIL_STRING",animalDescription[listItemIndex]);
+        intentToStartDetailActivity.putExtra("MOVIE_INDEX",listItemIndex);
+        intentToStartDetailActivity.putExtra("SEARCH_RESULT",gSearchResult);
         startActivity(intentToStartDetailActivity);
-        Toast.makeText(this, "index:"+listItemIndex, Toast.LENGTH_SHORT).show();
+
     }
 
     public class FetchDataFronInterner extends AsyncTask<String,Void,String>{
@@ -100,8 +98,22 @@ public class MainActivity extends AppCompatActivity implements MyOwnAdapter.List
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            textView.setText("text"+s);
+            if(s!=null) {
+                displayRecyclerView();
+                Parameters parameters = getGridDataForMainActivity(s);
+                inflateMainActivity(parameters);
+            }else{
+                displatErrorMessage();
+            }
         }
+    }
+    void displatErrorMessage(){
+        movieGridRecyclerView.setVisibility(View.INVISIBLE);
+        tvErrorMessage.setVisibility(View.VISIBLE);
+    }
+    void displayRecyclerView(){
+        movieGridRecyclerView.setVisibility(View.VISIBLE);
+        tvErrorMessage.setVisibility(View.INVISIBLE);
     }
 
     URL getUrlFromString(String stringUrl){
@@ -133,18 +145,49 @@ public class MainActivity extends AppCompatActivity implements MyOwnAdapter.List
         }
     }
 
-    private List<String> getGridDataForMainActivity(String searchResult){
+    private Parameters getGridDataForMainActivity(String searchResult){
+        Parameters parameters = new Parameters();
+        List<String> movieName = new ArrayList<>();
+        List<Double> movieRating = new ArrayList<>();
+        List<String> movieImage = new ArrayList<>();
         try {
             JSONObject movieData = new JSONObject(searchResult);
-            JSONArray movieNames = movieData.getJSONArray("result");
-            int length = movieNames.length();
-            List<String> listMovie = new List<String>();
+            JSONArray movieDetails = movieData.getJSONArray("results");
+            int length = movieDetails.length();
+           for(int i=0; i<length;i++){
+               JSONObject tempObject = new JSONObject(movieDetails.getString(i));
+               movieName.add(tempObject.getString("title"));
+               movieRating.add(tempObject.getDouble("vote_average"));
+               movieImage.add(tempObject.getString("poster_path"));
+           }
+           parameters.setMovieImage(movieImage);
+           parameters.setMovieName(movieName);
+           parameters.setMovieRating(movieRating);
+
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        return parameters;
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.optionsmenu,menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if(itemId == R.id.listByTop_rating){
+            new FetchDataFronInterner().execute(stringBaseAddressTopRated+api);
+        }
+        else if(itemId == R.id.listByPopularity){
+            new FetchDataFronInterner().execute(stringBaseAddressPopular+api);
+        }
 
+        return true;
+    }
 }
