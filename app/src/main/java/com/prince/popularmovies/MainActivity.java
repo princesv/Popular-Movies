@@ -14,6 +14,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements MyOwnAdapter.List
     MyOwnAdapter myOwnAdapter;
     TextView tvErrorMessage;
     Parameters paramitersToInflateMoviesList;
+    ProgressBar progressBar;
     public String gSearchResult;
 
     private final String stringBaseAddressTopRated = "http://api.themoviedb.org/3/movie/top_rated?api_key=";
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements MyOwnAdapter.List
 
         movieGridRecyclerView = findViewById(R.id.movie_grid_recycler_view);
         tvErrorMessage = findViewById(R.id.errorMessage);
+        progressBar = findViewById(R.id.progressBar);
 
 
         new FetchDataFronInterner().execute(stringBaseAddressPopular+api);
@@ -79,6 +82,14 @@ public class MainActivity extends AppCompatActivity implements MyOwnAdapter.List
 
     public class FetchDataFronInterner extends AsyncTask<String,Void,String>{
         @Override
+        protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
+            tvErrorMessage.setVisibility(View.INVISIBLE);
+            movieGridRecyclerView.setVisibility(View.INVISIBLE);
+            super.onPreExecute();
+        }
+
+        @Override
         protected String doInBackground(String... strings) {
             String stringUrl = strings[0];
             URL urlToFetchData = getUrlFromString(stringUrl);
@@ -97,17 +108,18 @@ public class MainActivity extends AppCompatActivity implements MyOwnAdapter.List
 
         @Override
         protected void onPostExecute(String s) {
+            progressBar.setVisibility(View.INVISIBLE);
             super.onPostExecute(s);
             if(s!=null) {
                 displayRecyclerView();
                 Parameters parameters = getGridDataForMainActivity(s);
                 inflateMainActivity(parameters);
             }else{
-                displatErrorMessage();
+                displayErrorMessage();
             }
         }
     }
-    void displatErrorMessage(){
+    void displayErrorMessage(){
         movieGridRecyclerView.setVisibility(View.INVISIBLE);
         tvErrorMessage.setVisibility(View.VISIBLE);
     }

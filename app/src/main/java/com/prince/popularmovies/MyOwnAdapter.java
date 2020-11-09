@@ -81,5 +81,6 @@ public class MyOwnAdapter extends RecyclerView.Adapter<MyOwnAdapter.MyOwnViewHan
         this.movieRating = parameters.getMovieRating();
         this.movieImage = parameters.getMovieImage();
         mClickListener = listener;
+        notifyDataSetChanged();
     }
 }

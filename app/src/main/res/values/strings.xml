@@ -2,5 +2,6 @@
     <string name="app_name">Popular Movies</string>
    <string name="popular">sort by popularity</string>
     <string name="rating">sort top rating</string>
+    <string name="errorMessage">check internet connection!</string>
 
 </resources>
